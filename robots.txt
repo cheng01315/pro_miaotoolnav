@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /assets/
+Disallow: /css/
+Disallow: /json/
+Disallow: /LICENSE
+Disallow: /README.md
+Disallow: /README-zh.md
+Allow: /index.html
+Sitemap: https://miaonav.top/sitemap.xml
