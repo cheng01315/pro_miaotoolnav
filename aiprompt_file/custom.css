@@ -26,4 +26,18 @@
         margin-top: 1rem;
         width: 100%;
     }
+    
+    /* 确保移动端返回按钮在左侧，标题居中，不重叠 */
+    .mobile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+    
+    .mobile-title-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
