@@ -23,15 +23,15 @@
     <!-- 顶部导航栏 -->
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3">
-            <div class="flex items-center justify-between relative md:static">
-                <div class="flex items-center md:mr-4 z-10">
+            <div class="flex items-center justify-between relative md:static mobile-nav-container">
+                <div class="flex items-center md:mr-4 mobile-back-button">
                     <a href="https://miaonav.top" class="text-2xl font-bold text-blue-600 hover:text-blue-800 transition-colors">
                         <i class="fa fa-arrow-left"></i>
                     </a>
                 </div>
                 
                 <!-- 移动端标题居中 -->
-                <h1 class="text-2xl font-bold text-blue-600 absolute left-1/2 transform -translate-x-1/2 md:hidden">
+                <h1 class="text-2xl font-bold text-blue-600 absolute left-1/2 transform -translate-x-1/2 md:hidden center-element">
                     <i class="fa fa-lightbulb-o mr-2"></i>AI提示词库
                 </h1>
                 
@@ -158,5 +158,7 @@
     <script src="/aiprompt_file/prompt-data.js"></script>
     <!-- 引入主脚本文件 -->
     <script src="/aiprompt_file/app.min.js"></script>
+    <!-- 引入调试脚本文件 -->
+    <script src="/aiprompt_file/debug.js"></script>
 </body>
 </html>

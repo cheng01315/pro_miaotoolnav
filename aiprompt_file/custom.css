@@ -52,4 +52,33 @@
         z-index: 0;
         pointer-events: none;
     }
+    
+    /* 确保返回按钮在移动端始终在左侧 */
+    .mobile-back-button {
+        z-index: 20;
+        position: relative;
+        /* 确保返回按钮在左上角 */
+        order: -1;
+        padding: 0.5rem;
+        margin-right: 0.5rem;
+    }
+    
+    /* 调整移动端顶部导航栏布局 */
+    .mobile-nav-container {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* 确保居中元素不会影响其他元素的点击 */
+    .center-element {
+        pointer-events: none;
+        flex: 1;
+        text-align: center;
+    }
+    
+    .center-element * {
+        pointer-events: auto;
+    }
 }
