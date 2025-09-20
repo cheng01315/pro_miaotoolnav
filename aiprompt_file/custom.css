@@ -40,4 +40,16 @@
         left: 50%;
         transform: translateX(-50%);
     }
+    
+    /* 修复移动端黑暗模式按钮无法点击的问题 */
+    #theme-toggle-mobile {
+        z-index: 10;
+        pointer-events: auto;
+    }
+    
+    /* 确保居中的标题不会阻挡其他元素 */
+    .mobile-center-title {
+        z-index: 0;
+        pointer-events: none;
+    }
 }
