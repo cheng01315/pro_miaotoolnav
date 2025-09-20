@@ -1,0 +1,29 @@
+/* 自定义移动端样式 */
+@media (max-width: 768px) {
+    .mobile-search-container {
+        margin-top: 1rem;
+    }
+    
+    /* 在移动端，将搜索框放在下一行 */
+    .header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .header-content > div:first-child {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .mobile-title {
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+    
+    /* 移动端搜索框单独一行 */
+    .mobile-search-row {
+        margin-top: 1rem;
+        width: 100%;
+    }
+}
