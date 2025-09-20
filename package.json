@@ -1,0 +1,25 @@
+{
+  "name": "miaotoolnav-old",
+  "version": "1.0.0",
+  "description": "[English](README.md) | [中文](README.zh.md)",
+  "main": "analyze_categories.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheng01315/miaotoolnav-old.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cheng01315/miaotoolnav-old/issues"
+  },
+  "homepage": "https://github.com/cheng01315/miaotoolnav-old#readme",
+  "devDependencies": {
+    "cssnano": "^7.1.1",
+    "postcss-cli": "^11.0.1",
+    "terser": "^5.44.0"
+  }
+}
