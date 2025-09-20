@@ -1,3 +1,5 @@
+// 更新后的app.js，实现按需加载机制
+
 // DOM元素
 const mainCategoriesContainer = document.getElementById('main-categories');
 const subCategoriesContainer = document.getElementById('sub-categories-container');
@@ -25,35 +27,60 @@ let loadedItemsCount = 0; // 已加载的项目数量
 let isLoading = false; // 是否正在加载
 let isDarkMode = false; // 夜间模式状态
 
+// 数据加载器
+const dataLoader = require('./data-loader.js');
+
+// 缓存数据
+let allData = [];
+let categorizedData = {};
+let allMainCategories = new Set();
+let allSubCategories = new Set();
+let categoryIndex = { mainCategories: [], subCategories: [], categoryMapping: {} };
+
+// 初始化应用
+async function initApp() {
+    try {
+        // 加载分类索引
+        categoryIndex = await dataLoader.loadCategoryIndex();
+        allMainCategories = new Set(categoryIndex.mainCategories);
+        allSubCategories = new Set(categoryIndex.subCategories);
+        
+        // 渲染分类
+        renderMainCategories();
+        renderSubCategories();
+        renderPromptCards(true);
+        
+        // 应用保存的主题偏好
+        applySavedTheme();
+    } catch (error) {
+        console.error('Failed to initialize app:', error);
+    }
+}
+
 // 处理数据，按分类组织
-const categorizedData = {};
-const allMainCategories = new Set();
-const allSubCategories = new Set();
-
-// 初始化数据结构
-promptData.forEach(item => {
-    const mainCat = item.mainCategory;
-    const subCat = item.subCategory;
+function processCategorizedData(data) {
+    const categorized = {};
     
-    allMainCategories.add(mainCat);
-    allSubCategories.add(subCat);
+    data.forEach(item => {
+        const mainCat = item.mainCategory;
+        const subCat = item.subCategory;
+        
+        if (!categorized[mainCat]) {
+            categorized[mainCat] = {};
+        }
+        
+        if (!categorized[mainCat][subCat]) {
+            categorized[mainCat][subCat] = [];
+        }
+        
+        categorized[mainCat][subCat].push(item);
+    });
     
-    if (!categorizedData[mainCat]) {
-        categorizedData[mainCat] = {};
-    }
-    
-    if (!categorizedData[mainCat][subCat]) {
-        categorizedData[mainCat][subCat] = [];
-    }
-    
-    categorizedData[mainCat][subCat].push(item);
-});
-
-// 搜索结果缓存
-const searchCache = new Map();
+    return categorized;
+}
 
 // 渲染大分类（使用文档片段优化DOM操作）
-function renderMainCategories() {
+async function renderMainCategories() {
     // 创建文档片段以减少重排
     const fragment = document.createDocumentFragment();
     
@@ -61,40 +88,37 @@ function renderMainCategories() {
     const allBtn = document.createElement('div');
     allBtn.className = `category-tag main-category ${currentMainCategory === null ? 'active' : ''}`;
     // 计算总指令数量
-    const totalCount = promptData.length;
+    const totalCount = Array.from(allMainCategories).reduce((sum, category) => {
+        return sum + (categoryIndex.categoryMapping[category]?.length || 0);
+    }, 0);
     allBtn.textContent = `全部 (${totalCount})`;
-    allBtn.addEventListener('click', () => {
+    allBtn.addEventListener('click', async () => {
         currentMainCategory = null;
         currentSubCategory = null;
         currentPage = 1;
-        renderMainCategories();
-        renderSubCategories();
-        renderPromptCards();
+        await renderMainCategories();
+        await renderSubCategories();
+        await renderPromptCards();
     });
     fragment.appendChild(allBtn);
     
     // 添加各个大分类
-    Array.from(allMainCategories).forEach(category => {
+    for (const category of allMainCategories) {
         const categoryBtn = document.createElement('div');
         categoryBtn.className = `category-tag main-category ${currentMainCategory === category ? 'active' : ''}`;
         // 计算该大分类下的指令数量
-        let count = 0;
-        if (categorizedData[category]) {
-            Object.values(categorizedData[category]).forEach(items => {
-                count += items.length;
-            });
-        }
+        const count = categoryIndex.categoryMapping[category]?.length || 0;
         categoryBtn.textContent = `${category} (${count})`;
-        categoryBtn.addEventListener('click', () => {
+        categoryBtn.addEventListener('click', async () => {
             currentMainCategory = category;
             currentSubCategory = null;
             currentPage = 1;
-            renderMainCategories();
-            renderSubCategories();
-            renderPromptCards();
+            await renderMainCategories();
+            await renderSubCategories();
+            await renderPromptCards();
         });
         fragment.appendChild(categoryBtn);
-    });
+    }
     
     // 一次性更新DOM
     mainCategoriesContainer.innerHTML = '';
@@ -102,7 +126,7 @@ function renderMainCategories() {
 }
 
 // 渲染小分类（使用文档片段优化DOM操作）
-function renderSubCategories() {
+async function renderSubCategories() {
     // 创建文档片段以减少重排
     const fragment = document.createDocumentFragment();
     
@@ -114,13 +138,25 @@ function renderSubCategories() {
     
     if (currentMainCategory) {
         // 如果选择了大分类，只显示该大分类下的小分类
-        Object.keys(categorizedData[currentMainCategory]).forEach(subCat => {
-            relevantSubCategories.add(subCat);
-            subCategoryCounts[subCat] = categorizedData[currentMainCategory][subCat].length;
+        relevantSubCategories = new Set(categoryIndex.categoryMapping[currentMainCategory] || []);
+        // 计算每个小分类的指令数量
+        const data = await dataLoader.loadByMainCategory(currentMainCategory);
+        data.forEach(item => {
+            subCategoryCounts[item.subCategory] = (subCategoryCounts[item.subCategory] || 0) + 1;
         });
     } else if (searchQuery) {
         // 如果有搜索词，显示所有包含匹配结果的小分类
-        promptData.forEach(item => {
+        // 这里需要加载所有数据进行搜索
+        // 为了性能考虑，可以考虑只搜索已加载的数据
+        // 或者实现服务端搜索
+        // 暂时使用已加载的数据
+        const allLoadedData = [];
+        for (const category of allMainCategories) {
+            const data = await dataLoader.loadByMainCategory(category);
+            allLoadedData.push(...data);
+        }
+        
+        allLoadedData.forEach(item => {
             if (isMatch(item, searchQuery)) {
                 relevantSubCategories.add(item.subCategory);
                 subCategoryCounts[item.subCategory] = (subCategoryCounts[item.subCategory] || 0) + 1;
@@ -130,39 +166,46 @@ function renderSubCategories() {
         // 否则显示所有小分类
         relevantSubCategories = allSubCategories;
         // 计算每个小分类的指令数量
-        promptData.forEach(item => {
-            subCategoryCounts[item.subCategory] = (subCategoryCounts[item.subCategory] || 0) + 1;
-        });
+        for (const category of allSubCategories) {
+            // 需要从所有主分类中统计小分类数量
+            for (const mainCat of allMainCategories) {
+                if (categoryIndex.categoryMapping[mainCat]?.includes(category)) {
+                    const data = await dataLoader.loadByMainCategory(mainCat);
+                    const count = data.filter(item => item.subCategory === category).length;
+                    subCategoryCounts[category] = (subCategoryCounts[category] || 0) + count;
+                }
+            }
+        }
     }
     
     // 添加"全部"选项
     const allBtn = document.createElement('div');
     allBtn.className = `category-tag sub-category ${currentSubCategory === null ? 'active' : ''}`;
     allBtn.textContent = '全部';
-    allBtn.addEventListener('click', () => {
+    allBtn.addEventListener('click', async () => {
         currentSubCategory = null;
         currentPage = 1;
         loadedItemsCount = 0; // 修复：在移动端也需要重置已加载项目计数
-        renderSubCategories();
-        renderPromptCards(true); // 修复：在移动端需要重置卡片渲染
+        await renderSubCategories();
+        await renderPromptCards(true); // 修复：在移动端需要重置卡片渲染
     });
     fragment.appendChild(allBtn);
     
     // 添加各个小分类
-        Array.from(relevantSubCategories).forEach(category => {
-            const categoryBtn = document.createElement('div');
-            categoryBtn.className = `category-tag sub-category ${currentSubCategory === category ? 'active' : ''}`;
-            // 添加指令数量
-            categoryBtn.textContent = `${category} (${subCategoryCounts[category]})`;
-            categoryBtn.addEventListener('click', () => {
-                currentSubCategory = category;
-                currentPage = 1;
-                loadedItemsCount = 0; // 修复：在移动端也需要重置已加载项目计数
-                renderSubCategories();
-                renderPromptCards(true); // 修复：在移动端需要重置卡片渲染
-            });
-            fragment.appendChild(categoryBtn);
+    for (const category of relevantSubCategories) {
+        const categoryBtn = document.createElement('div');
+        categoryBtn.className = `category-tag sub-category ${currentSubCategory === category ? 'active' : ''}`;
+        // 添加指令数量
+        categoryBtn.textContent = `${category} (${subCategoryCounts[category] || 0})`;
+        categoryBtn.addEventListener('click', async () => {
+            currentSubCategory = category;
+            currentPage = 1;
+            loadedItemsCount = 0; // 修复：在移动端也需要重置已加载项目计数
+            await renderSubCategories();
+            await renderPromptCards(true); // 修复：在移动端需要重置卡片渲染
         });
+        fragment.appendChild(categoryBtn);
+    }
     
     // 一次性更新DOM
     subCategories.innerHTML = '';
@@ -170,38 +213,33 @@ function renderSubCategories() {
 }
 
 // 渲染提示词卡片（分页/滚动加载）
-function renderPromptCards(reset = false) {
+async function renderPromptCards(reset = false) {
     let filteredItems = [];
     
     // 根据当前分类筛选
     if (currentMainCategory && currentSubCategory) {
-        filteredItems = categorizedData[currentMainCategory]?.[currentSubCategory] || [];
+        const data = await dataLoader.loadByMainCategory(currentMainCategory);
+        filteredItems = data.filter(item => item.subCategory === currentSubCategory);
     } else if (currentMainCategory) {
         // 只筛选大分类
-        Object.values(categorizedData[currentMainCategory] || {}).forEach(items => {
-            filteredItems = filteredItems.concat(items);
-        });
+        filteredItems = await dataLoader.loadByMainCategory(currentMainCategory);
     } else if (currentSubCategory) {
         // 只筛选小分类
-        Object.values(categorizedData).forEach(subCats => {
-            if (subCats[currentSubCategory]) {
-                filteredItems = filteredItems.concat(subCats[currentSubCategory]);
-            }
-        });
+        filteredItems = await dataLoader.loadBySubCategory(currentSubCategory);
     } else {
         // 没有选择分类，显示全部
-        filteredItems = [...promptData];
+        // 为了性能考虑，这里只加载前几个主分类
+        // 实际应用中可以根据需要调整
+        const categoriesToLoad = Array.from(allMainCategories).slice(0, 3);
+        for (const category of categoriesToLoad) {
+            const data = await dataLoader.loadByMainCategory(category);
+            filteredItems.push(...data);
+        }
     }
     
-    // 应用搜索筛选（使用缓存）
+    // 应用搜索筛选
     if (searchQuery) {
-        const cacheKey = searchQuery.toLowerCase();
-        if (searchCache.has(cacheKey)) {
-            filteredItems = searchCache.get(cacheKey);
-        } else {
-            filteredItems = filteredItems.filter(item => isMatch(item, searchQuery));
-            searchCache.set(cacheKey, filteredItems);
-        }
+        filteredItems = filteredItems.filter(item => isMatch(item, searchQuery));
     }
     
     // 显示无结果提示或渲染卡片
@@ -325,7 +363,7 @@ function removeLoadMoreButton() {
 }
 
 // 加载更多项目
-function loadMoreItems() {
+async function loadMoreItems() {
     // 设置加载状态
     isLoading = true;
     
@@ -341,26 +379,23 @@ function loadMoreItems() {
         }
     }
     
-    // 模拟网络延迟（实际应用中可能不需要）
-    setTimeout(() => {
-        // 重新渲染卡片（不重置）
-        renderPromptCards(false);
+    // 重新渲染卡片（不重置）
+    await renderPromptCards(false);
+    
+    // 重置加载状态
+    isLoading = false;
+    
+    // 隐藏加载指示器
+    const loadMoreContainer = document.getElementById('load-more-container');
+    if (loadMoreContainer) {
+        const button = loadMoreContainer.querySelector('button');
+        const indicator = document.getElementById('loading-indicator');
         
-        // 重置加载状态
-        isLoading = false;
-        
-        // 隐藏加载指示器
-        const loadMoreContainer = document.getElementById('load-more-container');
-        if (loadMoreContainer) {
-            const button = loadMoreContainer.querySelector('button');
-            const indicator = document.getElementById('loading-indicator');
-            
-            if (button && indicator) {
-                button.classList.remove('hidden');
-                indicator.classList.add('hidden');
-            }
+        if (button && indicator) {
+            button.classList.remove('hidden');
+            indicator.classList.add('hidden');
         }
-    }, 300);
+    }
 }
 
 // 渲染分页控件
@@ -379,10 +414,10 @@ function renderPagination(totalItems) {
     prevButton.className = `prev-btn ${currentPage === 1 ? 'disabled' : ''}`;
     prevButton.textContent = '上一页';
     prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener('click', () => {
+    prevButton.addEventListener('click', async () => {
         if (currentPage > 1) {
             currentPage--;
-            renderPromptCards();
+            await renderPromptCards();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
@@ -401,9 +436,9 @@ function renderPagination(totalItems) {
         const pageButton = document.createElement('button');
         pageButton.className = `page-btn ${i === currentPage ? 'active' : ''}`;
         pageButton.textContent = i;
-        pageButton.addEventListener('click', () => {
+        pageButton.addEventListener('click', async () => {
             currentPage = i;
-            renderPromptCards();
+            await renderPromptCards();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         
@@ -415,10 +450,10 @@ function renderPagination(totalItems) {
     nextButton.className = `next-btn ${currentPage === totalPages ? 'disabled' : ''}`;
     nextButton.textContent = '下一页';
     nextButton.disabled = currentPage === totalPages;
-    nextButton.addEventListener('click', () => {
+    nextButton.addEventListener('click', async () => {
         if (currentPage < totalPages) {
             currentPage++;
-            renderPromptCards();
+            await renderPromptCards();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
@@ -503,21 +538,21 @@ function applySavedTheme() {
 }
 
 // 搜索功能
-function handleSearch() {
+async function handleSearch() {
     searchQuery = searchInput.value.trim();
     currentPage = 1;
     loadedItemsCount = 0; // 重置已加载项目计数
-    renderSubCategories();
-    renderPromptCards(true); // 重置卡片渲染
+    await renderSubCategories();
+    await renderPromptCards(true); // 重置卡片渲染
 }
 
 // 窗口大小改变事件处理
-function handleResize() {
+async function handleResize() {
     // 重置页码和已加载项目计数
     currentPage = 1;
     loadedItemsCount = 0;
     // 重新渲染卡片
-    renderPromptCards(true);
+    await renderPromptCards(true);
 }
 
 // 事件监听
@@ -536,7 +571,12 @@ copyEnglish.addEventListener('click', () => {
     copyToClipboard(modalEnglish.textContent, '英文提示词');
 });
 
-searchInput.addEventListener('input', handleSearch);
+searchInput.addEventListener('input', () => {
+    // 防抖处理
+    clearTimeout(searchInput.timeoutId);
+    searchInput.timeoutId = setTimeout(handleSearch, 300);
+});
+
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -550,11 +590,5 @@ themeToggle.addEventListener('click', toggleDarkMode);
 // 添加窗口大小改变监听器
 window.addEventListener('resize', handleResize);
 
-// 初始化
-document.addEventListener('DOMContentLoaded', () => {
-    renderMainCategories();
-    renderSubCategories();
-    renderPromptCards(true); // 初始化时重置卡片渲染
-    // 应用保存的主题偏好
-    applySavedTheme();
-});
+// 初始化应用
+document.addEventListener('DOMContentLoaded', initApp);
