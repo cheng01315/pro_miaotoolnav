@@ -1,0 +1,33 @@
+/* 自定义样式，确保PC端和移动端分别只显示对应的链接 */
+
+/* PC端显示导航链接 */
+.pc-nav-links {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .pc-nav-links {
+    display: flex;
+  }
+  
+  /* 添加链接之间的间距 */
+  .pc-nav-links a:not(:last-child) {
+    margin-right: 1rem;
+  }
+}
+
+/* 移动端显示导航链接 */
+.mobile-nav-links {
+  display: flex;
+}
+
+@media (min-width: 1024px) {
+  .mobile-nav-links {
+    display: none;
+  }
+}
+
+/* 确保导航链接和黑夜模式按钮之间有适当间距 */
+.nav-links-spacing {
+  margin-right: 1rem;
+}
