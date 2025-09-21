@@ -1,4 +1,21 @@
 User-agent: *
-Allow: /aiprompt_file/image.svg
+Disallow: /404.html
+Disallow: /LICENSE
+Disallow: /README.md
+Disallow: /README.zh.md
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /analyze_categories.js
+
+# 允许访问主要目录
+Allow: /aiprompt_file/
 Allow: /assets/
+Allow: /css/
+Allow: /json/
+
+# 禁止访问敏感目录（如果有）
+# Disallow: /private/
+# Disallow: /admin/
+
+# Sitemap
 Sitemap: https://miaonav.top/sitemap.xml
