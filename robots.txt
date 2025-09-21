@@ -1,7 +1,4 @@
 User-agent: *
-Disallow: /css/
-Disallow: /json/
-Disallow: /aiprompt_file/
 Allow: /aiprompt_file/image.svg
 Allow: /assets/
 Sitemap: https://miaonav.top/sitemap.xml
