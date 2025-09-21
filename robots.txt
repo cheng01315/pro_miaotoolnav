@@ -13,9 +13,5 @@ Allow: /assets/
 Allow: /css/
 Allow: /json/
 
-# 禁止访问敏感目录（如果有）
-# Disallow: /private/
-# Disallow: /admin/
-
 # Sitemap
 Sitemap: https://miaonav.top/sitemap.xml
