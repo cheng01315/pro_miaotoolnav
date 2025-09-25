@@ -44,48 +44,100 @@ const categoryFileMap = {
 // 搜索结果缓存
 const searchCache = new Map();
 
+// 跟踪正在加载的分类
+const loadingCategories = new Set();
+
 // 动态加载数据文件
 async function loadCategoryData(category) {
+    // 检查该分类是否正在加载
+    if (loadingCategories.has(category)) {
+        console.log('Category is already loading:', category);
+        // 等待加载完成
+        return new Promise((resolve) => {
+            const checkLoading = setInterval(() => {
+                if (!loadingCategories.has(category)) {
+                    clearInterval(checkLoading);
+                    resolve();
+                }
+            }, 100);
+        });
+    }
+    
+    // 标记该分类正在加载
+    loadingCategories.add(category);
+    
     // 显示加载指示器
     if (loadingIndicator) {
         loadingIndicator.classList.remove('hidden');
     }
     
     try {
+        // 获取数据文件路径
+        const filePath = categoryFileMap[category];
+        console.log('Loading data file for category:', category, 'Path:', filePath);
+        
+        // 检查文件路径是否存在
+        if (!filePath) {
+            throw new Error(`No file path found for category: ${category}`);
+        }
+        
+        // 添加时间戳参数避免缓存
+        const filePathWithTimestamp = `${filePath}?t=${Date.now()}`;
+        
         // 创建script标签动态加载数据文件
         const script = document.createElement('script');
-        const filePath = categoryFileMap[category];
+        script.async = false; // 同步加载以确保顺序
         
         // 创建一个Promise来处理异步加载
         await new Promise((resolve, reject) => {
             script.onload = () => {
+                console.log('Data file loaded successfully for category:', category);
                 // 数据文件加载完成后，promptData变量会自动可用
+                // 检查promptData是否存在
+                if (typeof window.promptData === 'undefined') {
+                    reject(new Error(`promptData is undefined after loading file for category: ${category}`));
+                    return;
+                }
+                
                 // 处理该分类的数据
-                processCategoryData(category, promptData);
+                processCategoryData(category, window.promptData);
                 // 清理window.promptData变量
                 delete window.promptData;
                 resolve();
             };
             
-            script.onerror = () => {
-                reject(new Error(`Failed to load data file for category: aiprompt_file/${category}`));
+            script.onerror = (error) => {
+                console.error('Failed to load data file for category:', category, error);
+                reject(new Error(`Failed to load data file for category: ${category}`));
             };
             
-            script.src = filePath;
+            script.src = filePathWithTimestamp;
             document.head.appendChild(script);
         });
     } catch (error) {
         console.error('Error loading category data:', error);
+        throw error;
     } finally {
         // 隐藏加载指示器
         if (loadingIndicator) {
             loadingIndicator.classList.add('hidden');
         }
+        
+        // 标记该分类加载完成
+        loadingCategories.delete(category);
     }
 }
 
 // 处理分类数据
 function processCategoryData(category, data) {
+    console.log('Processing data for category:', category, 'Data length:', data ? data.length : 0);
+    
+    // 检查数据是否存在
+    if (!data || !Array.isArray(data)) {
+        console.error('Invalid data for category:', category, data);
+        return;
+    }
+    
     // 初始化该分类的数据结构
     if (!categorizedData[category]) {
         categorizedData[category] = {};
@@ -95,6 +147,12 @@ function processCategoryData(category, data) {
     data.forEach(item => {
         const mainCat = item.mainCategory;
         const subCat = item.subCategory;
+        
+        // 检查必要的属性是否存在
+        if (!mainCat || !subCat) {
+            console.warn('Item missing mainCategory or subCategory:', item);
+            return;
+        }
         
         allMainCategories.add(mainCat);
         allSubCategories.add(subCat);
@@ -107,8 +165,22 @@ function processCategoryData(category, data) {
             categorizedData[mainCat][subCat] = [];
         }
         
-        categorizedData[mainCat][subCat].push(item);
+        // 检查是否已存在相同的项，避免重复添加
+        const exists = categorizedData[mainCat][subCat].some(existingItem => 
+            existingItem.title === item.title && 
+            existingItem.chinese === item.chinese && 
+            existingItem.english === item.english
+        );
+        
+        if (!exists) {
+            categorizedData[mainCat][subCat].push(item);
+        }
     });
+    
+    console.log('Data processed for category:', category, 'Categorized data keys:', Object.keys(categorizedData));
+    
+    // 重新渲染分类以更新数量显示
+    renderMainCategories();
 }
 
 // 渲染大分类（使用文档片段优化DOM操作）
@@ -116,16 +188,20 @@ function renderMainCategories() {
     // 创建文档片段以减少重排
     const fragment = document.createDocumentFragment();
     
-    // 添加各个大分类（移除"全部"选项）
-    Array.from(allMainCategories).forEach(category => {
+    // 使用categoryFileMap的键来确保渲染所有分类
+    Object.keys(categoryFileMap).forEach(category => {
         const categoryBtn = document.createElement('div');
         categoryBtn.className = `category-tag main-category ${currentMainCategory === category ? 'active' : ''}`;
-        // 计算该大分类下的指令数量
+        // 获取该大分类下的指令数量
         let count = 0;
         if (categorizedData[category]) {
+            // 如果数据已加载，计算实际数量
             Object.values(categorizedData[category]).forEach(items => {
                 count += items.length;
             });
+        } else if (window.categoryCounts) {
+            // 如果数据未加载，使用预加载的数量
+            count = window.categoryCounts[category] || 0;
         }
         categoryBtn.textContent = `${category} (${count})`;
         categoryBtn.addEventListener('click', async () => {
@@ -134,13 +210,24 @@ function renderMainCategories() {
                 return;
             }
             
+            console.log('Category clicked:', category);
+            
             currentMainCategory = category;
             currentSubCategory = null;
             currentPage = 1;
             
             // 如果该分类数据还未加载，则动态加载
             if (!categorizedData[category]) {
-                await loadCategoryData(category);
+                console.log('Loading data for category:', category);
+                try {
+                    await loadCategoryData(category);
+                    console.log('Data loaded successfully for category:', category);
+                } catch (error) {
+                    console.error('Failed to load data for category:', category, error);
+                    // 即使加载失败，也要重新渲染页面以保持UI一致性
+                }
+            } else {
+                console.log('Data already loaded for category:', category);
             }
             
             renderMainCategories();
@@ -173,6 +260,9 @@ function renderSubCategories() {
                 relevantSubCategories.add(subCat);
                 subCategoryCounts[subCat] = categorizedData[currentMainCategory][subCat].length;
             });
+        } else {
+            // 如果该大分类的数据还未加载，显示加载提示
+            console.log('Data for main category not loaded yet:', currentMainCategory);
         }
     } else if (searchQuery) {
         // 如果有搜索词，显示所有包含匹配结果的小分类
@@ -625,21 +715,36 @@ themeToggle.addEventListener('click', toggleDarkMode);
 // 添加窗口大小改变监听器
 window.addEventListener('resize', handleResize);
 
+// 预加载所有分类的数量信息（已移除，使用category-counts.js文件替代）
+
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
     // 初始化所有大分类
     allMainCategories = new Set(Object.keys(categoryFileMap));
+    console.log('All main categories initialized:', Array.from(allMainCategories));
+    
+    // 直接渲染分类（使用category-counts.js中的预加载数量）
+    console.log('Rendering categories with preloaded counts');
+    renderMainCategories();
     
     // 默认选择第一个大分类
     if (allMainCategories.size > 0) {
         currentMainCategory = Array.from(allMainCategories)[0];
+        console.log('Default category selected:', currentMainCategory);
         // 加载默认分类的数据
         loadCategoryData(currentMainCategory).then(() => {
+            console.log('Default category data loaded successfully');
+            renderMainCategories();
+            renderSubCategories();
+            renderPromptCards(true); // 初始化时重置卡片渲染
+        }).catch(error => {
+            console.error('Failed to load default category data:', error);
             renderMainCategories();
             renderSubCategories();
             renderPromptCards(true); // 初始化时重置卡片渲染
         });
     } else {
+        console.log('No categories found');
         renderMainCategories();
         renderSubCategories();
         renderPromptCards(true); // 初始化时重置卡片渲染
