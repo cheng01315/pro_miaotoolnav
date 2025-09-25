@@ -68,7 +68,7 @@ async function loadCategoryData(category) {
             };
             
             script.onerror = () => {
-                reject(new Error(`Failed to load data file for category: ${category}`));
+                reject(new Error(`Failed to load data file for category: aiprompt_file/${category}`));
             };
             
             script.src = filePath;
