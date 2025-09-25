@@ -8,28 +8,16 @@
     <title>全能AI提示词库-覆盖生活/办公/学习/娱乐</title>
     <meta name="keywords" content="AI提示词库,AI提示词大全,日常生活AI提示词,求职办公AI提示词,休闲娱乐AI提示词,AI工具提示词">
     <meta name="description" content="汇集超 200 + 场景化 AI 提示词，涵盖非小说书籍总结、求职简历优化、休闲游戏互动等领域，无论是生活自助、职场提升、娱乐消遣，都能找到适配的 AI 提示词工具，助力高效调用 AI 能力，解决多场景需求。">
-    <link rel="canonical" href="https://miaonav.top/aiprompt">
+    <!-- 添加浏览器缓存策略 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <!-- 引入Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- 引入外部样式文件 -->
-    <link rel="stylesheet" href="/aiprompt_file/styles.min.css">
-    <!-- 添加浏览器缓存策略 -->
-    <meta http-equiv="Cache-Control" content="public, max-age=31536000">
-    <!-- Facebook Meta Tags -->
-    <meta property="og:url" content="https://miaonav.top/aiprompt">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="全能AI提示词库">
-    <meta property="og:description" content="汇集超 200 + 场景化 AI 提示词，涵盖非小说书籍总结、求职简历优化、休闲游戏互动等领域，无论是生活自助、职场提升、娱乐消遣，都能找到适配的 AI 提示词工具，助力高效调用 AI 能力，解决多场景需求。">
-    <meta property="og:image" content="https://miaonav.top/aiprompt_file/image.svg">
-    <!-- Twitter Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta property="twitter:domain" content="https://miaonav.top">
-    <meta property="twitter:url" content="https://miaonav.top/aiprompt">
-    <meta name="twitter:title" content="全能AI提示词库">
-    <meta name="twitter:description" content="汇集超 200 + 场景化 AI 提示词，涵盖非小说书籍总结、求职简历优化、休闲游戏互动等领域，无论是生活自助、职场提升、娱乐消遣，都能找到适配的 AI 提示词工具，助力高效调用 AI 能力，解决多场景需求。">
-    <meta name="twitter:image" content="https://miaonav.top/aiprompt_file/image.svg">
+    <link rel="stylesheet" href="/aiprompt_file/styles.min.css?v=1.0.8">
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- 顶部导航栏 -->
@@ -60,6 +48,11 @@
 
     <!-- 主内容区 -->
     <main class="container mx-auto px-4 py-6">
+        <!-- 加载指示器 -->
+        <div id="loading-indicator" class="hidden text-center py-4">
+            <i class="fa fa-spinner fa-spin mr-2"></i>加载中...
+        </div>
+        
         <!-- 分类导航区 -->
         <nav class="mb-8">
             <div class="flex flex-wrap gap-4" id="main-categories">
@@ -138,9 +131,9 @@
         </div>
     </div>
 
-    <!-- 引入数据文件 -->
-    <script src="/aiprompt_file/prompt-data.js"></script>
+    <!-- 引入分类数量信息文件 -->
+    <script src="/aiprompt_file/category-counts.js?v=1.0.0"></script>
     <!-- 引入主脚本文件 -->
-    <script src="/aiprompt_file/app.min.js"></script>
+    <script src="/aiprompt_file/app.min.js?v=1.0.11"></script>
 </body>
 </html>
