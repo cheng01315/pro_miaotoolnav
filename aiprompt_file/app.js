@@ -33,12 +33,12 @@ let allSubCategories = new Set();
 
 // 大分类到数据文件的映射
 const categoryFileMap = {
-    '生活服务': 'split_data/data-life-services.js',
-    '工作职业': 'split_data/data-work-career.js',
-    '内容创作': 'split_data/data-content-creation.js',
-    '学习提升': 'split_data/data-learning-improvement.js',
-    '休闲体验': 'split_data/data-leisure-experience.js',
-    '其他指令': 'split_data/data-other-instructions.js'
+    '生活服务': '/split_data/data-life-services.js',
+    '工作职业': '/split_data/data-work-career.js',
+    '内容创作': '/split_data/data-content-creation.js',
+    '学习提升': '/split_data/data-learning-improvement.js',
+    '休闲体验': '/split_data/data-leisure-experience.js',
+    '其他指令': '/split_data/data-other-instructions.js'
 };
 
 // 搜索结果缓存
