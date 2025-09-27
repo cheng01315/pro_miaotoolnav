@@ -17,7 +17,7 @@
     <!-- 引入Font Awesome -->
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- 引入外部样式文件 -->
-    <link rel="stylesheet" href="/aiprompt_file/styles.min.css?v=1.0.8">
+    <link rel="stylesheet" href="/aiprompt_file/styles.min.css?v=1.0.10">
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- 顶部导航栏 -->
@@ -110,23 +110,27 @@
             </div>
             
             <div class="border-t border-gray-200 pt-4">
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">中文提示词</h3>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-semibold text-gray-700">中文提示词</h3>
+                    <button id="copy-chinese" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg transition-colors text-sm">
+                        <i class="fa fa-copy mr-1"></i>复制
+                    </button>
+                </div>
                 <div class="bg-gray-50 p-4 rounded-lg mb-4">
                     <p id="modal-chinese" class="text-gray-800 whitespace-pre-wrap"></p>
                 </div>
-                <button id="copy-chinese" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors mb-6">
-                    <i class="fa fa-copy mr-2"></i>复制中文提示词
-                </button>
             </div>
             
             <div class="border-t border-gray-200 pt-4">
-                <h3 class="text-lg font-semibold text-gray-700 mb-2">英文提示词</h3>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-semibold text-gray-700">英文提示词</h3>
+                    <button id="copy-english" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg transition-colors text-sm">
+                        <i class="fa fa-copy mr-1"></i>复制
+                    </button>
+                </div>
                 <div class="bg-gray-50 p-4 rounded-lg mb-4">
                     <p id="modal-english" class="text-gray-800 whitespace-pre-wrap"></p>
                 </div>
-                <button id="copy-english" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors">
-                    <i class="fa fa-copy mr-2"></i>复制英文提示词
-                </button>
             </div>
         </div>
     </div>
@@ -134,6 +138,6 @@
     <!-- 引入分类数量信息文件 -->
     <script src="/aiprompt_file/category-counts.js?v=1.0.0"></script>
     <!-- 引入主脚本文件 -->
-    <script src="/aiprompt_file/app.min.js?v=1.0.11"></script>
+    <script src="/aiprompt_file/app.min.js?v=1.0.13"></script>
 </body>
 </html>

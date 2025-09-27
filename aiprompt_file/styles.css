@@ -150,6 +150,48 @@ body.dark-mode footer a:hover {
     color: #90cdf4;
 }
 
+/* 夜间模式模态框样式 */
+body.dark-mode #prompt-modal .bg-white {
+    background-color: #2d3748;
+}
+
+body.dark-mode #prompt-modal .text-gray-800 {
+    color: #e2e8f0;
+}
+
+body.dark-mode #prompt-modal .text-gray-700 {
+    color: #cbd5e1;
+}
+
+body.dark-mode #prompt-modal .text-gray-500 {
+    color: #a0aec0;
+}
+
+body.dark-mode #prompt-modal .bg-gray-50 {
+    background-color: #4a5568;
+}
+
+body.dark-mode #prompt-modal .border-gray-200 {
+    border-color: #4a5568;
+}
+
+body.dark-mode #prompt-modal #close-modal:hover {
+    color: #e2e8f0;
+}
+
+body.dark-mode #prompt-modal #copy-chinese,
+body.dark-mode #prompt-modal #copy-english {
+    background-color: #4a5568;
+    color: #e2e8f0;
+}
+
+body.dark-mode #prompt-modal #copy-chinese:hover,
+body.dark-mode #prompt-modal #copy-english:hover {
+    background-color: #718096;
+}
+
+
+
 /* 分页控件样式 - 固定位置和样式 */
 #pagination-controls {
     display: flex;
