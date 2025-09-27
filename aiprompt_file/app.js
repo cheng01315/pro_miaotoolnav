@@ -608,8 +608,66 @@ function openPromptModal(item) {
     modalTitle.textContent = item.title;
     modalChinese.textContent = item.chinese;
     modalEnglish.textContent = item.english;
+    
+    // 初始化展开/收缩功能
+    initExpandCollapse('chinese', item.chinese);
+    initExpandCollapse('english', item.english);
+    
     promptModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden'; // 防止背景滚动
+}
+
+// 初始化展开/收缩功能
+function initExpandCollapse(lang, content) {
+    const contentElement = lang === 'chinese' ? modalChinese : modalEnglish;
+    const toggleButton = lang === 'chinese' ? document.getElementById('toggle-chinese') : document.getElementById('toggle-english');
+    const overlay = lang === 'chinese' ? document.getElementById('chinese-overlay') : document.getElementById('english-overlay');
+    
+    // 重置按钮和覆盖层状态
+    toggleButton.classList.add('hidden');
+    overlay.classList.add('hidden');
+    
+    // 检查内容是否超过6行
+    const lineHeight = parseInt(window.getComputedStyle(contentElement).lineHeight);
+    const containerHeight = contentElement.clientHeight;
+    
+    // 等待DOM更新后检查
+    setTimeout(() => {
+        const contentHeight = contentElement.scrollHeight;
+        
+        if (contentHeight > lineHeight * 6) {
+            // 内容超过6行，启用展开/收缩功能
+            toggleButton.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            
+            // 设置最大高度为6行
+            contentElement.style.maxHeight = `${lineHeight * 6}px`;
+            contentElement.style.overflow = 'hidden';
+            
+            // 设置按钮状态为展开
+            toggleButton.querySelector('.expand-text').classList.remove('hidden');
+            toggleButton.querySelector('.collapse-text').classList.add('hidden');
+            
+            // 添加事件监听器
+            toggleButton.onclick = function() {
+                if (contentElement.style.maxHeight) {
+                    // 当前是收缩状态，展开
+                    contentElement.style.maxHeight = null;
+                    contentElement.style.overflow = null;
+                    overlay.classList.add('hidden');
+                    toggleButton.querySelector('.expand-text').classList.add('hidden');
+                    toggleButton.querySelector('.collapse-text').classList.remove('hidden');
+                } else {
+                    // 当前是展开状态，收缩
+                    contentElement.style.maxHeight = `${lineHeight * 6}px`;
+                    contentElement.style.overflow = 'hidden';
+                    overlay.classList.remove('hidden');
+                    toggleButton.querySelector('.expand-text').classList.remove('hidden');
+                    toggleButton.querySelector('.collapse-text').classList.add('hidden');
+                }
+            };
+        }
+    }, 0);
 }
 
 // 关闭弹窗

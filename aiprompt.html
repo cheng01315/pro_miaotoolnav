@@ -112,24 +112,38 @@
             <div class="border-t border-gray-200 pt-4">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-lg font-semibold text-gray-700">中文提示词</h3>
-                    <button id="copy-chinese" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg transition-colors text-sm">
-                        <i class="fa fa-copy mr-1"></i>复制
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="copy-chinese" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg transition-colors text-sm">
+                            <i class="fa fa-copy mr-1"></i>复制
+                        </button>
+                        <button id="toggle-chinese" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded-lg transition-colors text-sm hidden">
+                            <span class="expand-text">展开</span>
+                            <span class="collapse-text hidden">收起</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 relative">
                     <p id="modal-chinese" class="text-gray-800 whitespace-pre-wrap"></p>
+                    <div id="chinese-overlay" class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white to-transparent h-16 hidden"></div>
                 </div>
             </div>
             
             <div class="border-t border-gray-200 pt-4">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-lg font-semibold text-gray-700">英文提示词</h3>
-                    <button id="copy-english" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg transition-colors text-sm">
-                        <i class="fa fa-copy mr-1"></i>复制
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="copy-english" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-lg transition-colors text-sm">
+                            <i class="fa fa-copy mr-1"></i>复制
+                        </button>
+                        <button id="toggle-english" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded-lg transition-colors text-sm hidden">
+                            <span class="expand-text">展开</span>
+                            <span class="collapse-text hidden">收起</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                <div class="bg-gray-50 p-4 rounded-lg mb-4 relative">
                     <p id="modal-english" class="text-gray-800 whitespace-pre-wrap"></p>
+                    <div id="english-overlay" class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-white to-transparent h-16 hidden"></div>
                 </div>
             </div>
         </div>

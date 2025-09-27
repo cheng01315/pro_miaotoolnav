@@ -190,7 +190,19 @@ body.dark-mode #prompt-modal #copy-english:hover {
     background-color: #718096;
 }
 
+/* 展开/收缩按钮样式 */
+#toggle-chinese,
+#toggle-english {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 
+/* 渐变覆盖层样式 */
+#chinese-overlay,
+#english-overlay {
+    pointer-events: none; /* 确保覆盖层不影响点击事件 */
+}
 
 /* 分页控件样式 - 固定位置和样式 */
 #pagination-controls {
