@@ -593,14 +593,10 @@ function renderPagination(totalItems) {
     promptCardsContainer.appendChild(paginationContainer);
 }
 
-// 检查项目是否匹配搜索词
+// 检查项目是否匹配搜索词（仅搜索标题）
 function isMatch(item, query) {
     const lowerQuery = query.toLowerCase();
-    return (
-        item.title.toLowerCase().includes(lowerQuery) ||
-        item.chinese.toLowerCase().includes(lowerQuery) ||
-        item.english.toLowerCase().includes(lowerQuery)
-    );
+    return item.title.toLowerCase().includes(lowerQuery);
 }
 
 // 打开提示词详情弹窗
