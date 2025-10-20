@@ -240,9 +240,9 @@
       };
 
       // Event listeners for open and close buttons
-      openSidebarButton.addEventListener('click', openSidebar);
-      closeSidebarButton.addEventListener('click', closeSidebar);
-      offCanvasBackdrop.addEventListener('click', closeSidebar); // Close sidebar when clicking on the backdrop
+    if (openSidebarButton) openSidebarButton.addEventListener('click', openSidebar);
+    if (closeSidebarButton) closeSidebarButton.addEventListener('click', closeSidebar);
+    if (offCanvasBackdrop) offCanvasBackdrop.addEventListener('click', closeSidebar); // Close sidebar when clicking on the backdrop
     });
 
     // Search functionality
@@ -584,14 +584,14 @@
         const firstLayer = data;
         // Render navigation using the first layer of data
         renderNavigation(firstLayer, document.getElementById('navigation'), true);
-        // Render bookmarks using the first layer of data, starting from the Bookmark
-        renderBookmarks(firstLayer, [{ title: 'Bookmark', children: firstLayer }]);
+        // Render bookmarks using the first layer of data
+        renderBookmarks(firstLayer, firstLayer.map(item => ({ title: item.title, children: item.children })));
 
         // Automatically select and show the first item
         if (firstLayer.length > 0) {
           const firstItem = firstLayer[0];
           updateSidebarActiveState([{ title: firstItem.title, children: firstItem.children }]);
-          renderBookmarks(firstItem.children, [{ title: 'Bookmark', children: firstLayer }, { title: firstItem.title, children: firstItem.children }]);
+          renderBookmarks(firstItem.children, [{ title: firstItem.title, children: firstItem.children }]);
         }
       })
       .catch(error => console.error('Error loading bookmarks:', error));
@@ -650,14 +650,14 @@
           const firstLayer = data;
           // Render navigation using the first layer of data
           renderNavigation(firstLayer, document.getElementById('navigation'), true);
-          // Render bookmarks using the first layer of data, starting from the Bookmark
-          renderBookmarks(firstLayer, [{ title: 'Bookmark', children: firstLayer }]);
+          // Render bookmarks using the first layer of data
+          renderBookmarks(firstLayer, firstLayer.map(item => ({ title: item.title, children: item.children })));
 
           // Automatically select and show the first item
           if (firstLayer.length > 0) {
             const firstItem = firstLayer[0];
             updateSidebarActiveState([{ title: firstItem.title, children: firstItem.children }]);
-            renderBookmarks(firstItem.children, [{ title: 'Bookmark', children: firstLayer }, { title: firstItem.title, children: firstItem.children }]);
+            renderBookmarks(firstItem.children, [{ title: firstItem.title, children: firstItem.children }]);
           }
         })
         .catch(error => {
@@ -689,10 +689,16 @@
     });
 
     // Open mobile menu
-    document.getElementById('open-sidebar-button').addEventListener('click', function () {
-      var navigation = document.getElementById('navigation').cloneNode(true);
-      document.getElementById('sidebar-2').appendChild(navigation);
-    });
+    const openSidebarButtonElement = document.getElementById('open-sidebar-button');
+    if (openSidebarButtonElement) {
+      openSidebarButtonElement.addEventListener('click', function () {
+        const navigation = document.getElementById('navigation');
+        const sidebar2 = document.getElementById('sidebar-2');
+        if (navigation && sidebar2) {
+          sidebar2.appendChild(navigation.cloneNode(true));
+        }
+      });
+    }
 
   </script>
 

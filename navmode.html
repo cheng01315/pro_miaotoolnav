@@ -317,7 +317,7 @@
         const cardContent = document.createElement('div');
         cardContent.className = 'flex flex-col overflow-hidden'; // Ensure the content is hidden if too long
 
-        const cardTitle = document.createElement('h2');
+        const cardTitle = document.createElement('h3');
         cardTitle.className = 'text-sm font-medium mb-1 truncate dark:text-gray-400';
         cardTitle.innerText = title;
 
@@ -340,7 +340,7 @@
       // Create folder card element
       function createFolderCard(title, children, path) {
         const card = document.createElement('div');
-        card.className = 'folder-card text-gray rounded-lg cursor-pointer flex flex-col items-center';
+        card.className = 'cursor-pointer flex items-center hover:shadow-sm transition-shadow p-4 bg-white shadow-sm ring-1 ring-gray-900/5 dark:pintree-ring-gray-800 rounded-lg hover:bg-gray-100 dark:pintree-bg-gray-900 dark:hover:pintree-bg-gray-800';
         card.onclick = () => {
           // 创建新路径，确保包含完整的层级信息
           const newPath = [...path];
@@ -358,22 +358,22 @@
 
         const cardIcon = document.createElement('div');
         cardIcon.innerHTML = `
-          <svg viewBox="0 0 100 80" class="folder__svg">
-            <rect x="0" y="0" width="100" height="80" class="folder__back" />
-            <rect x="15" y="8" width="70" height="60" class="paper-1" />
-            <rect x="10" y="18" width="80" height="50" class="paper-2" />
-            <rect x="0" y="10" width="100" height="70" class="folder__front" />
-            <rect x="0" y="10" width="100" height="70" class="folder__front right" />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="currentColor" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h4l2 2h7a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
           </svg>
         `;
-        cardIcon.className = 'mb-2';
+        cardIcon.className = 'w-8 h-8 mr-4 flex-shrink-0';
 
-        const cardTitle = document.createElement('h2');
-        cardTitle.className = 'text-xs font-normal text-center w-full truncate dark:text-gray-400';
+        const cardContent = document.createElement('div');
+        cardContent.className = 'flex flex-col overflow-hidden';
+
+        const cardTitle = document.createElement('h3');
+        cardTitle.className = 'text-sm font-medium mb-1 truncate dark:text-gray-400';
         cardTitle.innerText = title;
 
+        cardContent.appendChild(cardTitle);
         card.appendChild(cardIcon);
-        card.appendChild(cardTitle);
+        card.appendChild(cardContent);
 
         return card;
       }
@@ -616,7 +616,7 @@
             // 如果有子文件夹，创建文件夹网格
             if (subFolders.length > 0) {
               const folderGrid = document.createElement('div');
-              folderGrid.className = 'grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-12 gap-6';
+              folderGrid.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-6';
               folderGrid.style.marginBottom = '1.5rem'; // 减小间距为适中值
               subFolders.forEach(folder => {
                 const folderCard = createFolderCard(folder.title, folder.children, path.concat({ title: rootFolder.title, children: rootFolder.children }));
@@ -674,7 +674,7 @@
                 // 如果有子子文件夹，创建文件夹网格
                 if (subSubFolders.length > 0) {
                   const folderGrid = document.createElement('div');
-                  folderGrid.className = 'grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-8 2xl:grid-cols-12 gap-6';
+                  folderGrid.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-6';
                   folderGrid.style.marginBottom = '1.5rem'; // 减小间距为适中值
                   subSubFolders.forEach(folder => {
                     const folderCard = createFolderCard(folder.title, folder.children, path.concat({ title: subItem.title, children: subItem.children }));
