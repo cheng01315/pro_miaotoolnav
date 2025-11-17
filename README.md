@@ -3,8 +3,10 @@
 
 <ul>
   
-<li><strong>域名：</strong>miaonav.top</li>
+
 <li><strong>netlify：</strong>https://miaonav-top.netlify.app/</li>
+<li><strong>新的网站地址：</strong>https://miaonav.top</li>
+
 </ul>
 <div align="center">
 -------以下为原项目信息:--------
