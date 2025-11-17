@@ -3,7 +3,7 @@
 
 <ul>
   
-<li><strong>域名：</strong>www.miaonav.top</li>
+<li><strong>域名：</strong>miaonav.top</li>
 <li><strong>netlify：</strong>https://miaonav-top.netlify.app/</li>
 </ul>
 <div align="center">
