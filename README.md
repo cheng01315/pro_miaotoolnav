@@ -4,7 +4,7 @@
 </ul>
 
 ## 我的个人新导航网站
-<ul><li><strong>https://miaonav.top</strong></li></ul>
+<ul><li>https://miaonav.top</li></ul>
 
 <div align="center">
 -------以下为原项目信息:--------
