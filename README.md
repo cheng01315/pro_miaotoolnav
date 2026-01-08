@@ -1,6 +1,6 @@
 ## 网站地址
 <ul>
-<li><strong>netlify：</strong>https://pro-miaotoolnav.netlify.app/</li>
+<li><strong>netlify：</strong>https://pro-miaotool.netlify.app/</li>
 </ul>
 
 ## 我的个人新导航网站
