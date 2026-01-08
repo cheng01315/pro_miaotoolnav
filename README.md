@@ -5,7 +5,10 @@
   
 
 <li><strong>netlify：</strong>https://pro-miaotoolnav.netlify.app/</li>
-<li><strong>新的网站地址：</strong>https://miaonav.top</li>
+
+# 我的个人新导航网站
+<strong>https://miaonav.top</strong>
+
 
 </ul>
 <div align="center">
